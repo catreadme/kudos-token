@@ -1,0 +1,60 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Kudos (KDS)</title>
+</head>
+
+<body>
+<h1>Kudos (KDS)</h1>
+<p>See console log</p>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.3.0/web3.min.js"></script>
+<script>
+  const ethEnabled = () => {
+    if (window.ethereum) {
+      window.web3 = new Web3(window.ethereum);
+      window.ethereum.enable();
+      return true;
+    }
+    return false;
+  }
+
+  if (!ethEnabled()) {
+    alert("Please install MetaMask to use the Kudos (KDS) transaction ui");
+  }
+
+  var kdsInterface = [{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"spender","type":"address"},{"name":"tokens","type":"uint256"}],"name":"approve","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"from","type":"address"},{"name":"to","type":"address"},{"name":"tokens","type":"uint256"}],"name":"transferFrom","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"},{"name":"tokens","type":"uint256"}],"name":"transfer","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"owner","type":"address"},{"name":"spender","type":"address"}],"name":"allowance","outputs":[{"name":"remaining","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"owner","type":"address"},{"indexed":true,"name":"spender","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Approval","type":"event"}];
+  var kdsContractAddress = '0xe2e2f6881c20c873d8e53e21ba942f865e25561a';
+  var kds = new window.web3.eth.Contract(
+          kdsInterface,
+          kdsContractAddress);
+
+  kds.methods.name().call({}, (err, res) => {
+    console.log(`Token Name: ${res}`);
+  });
+
+  kds.methods.symbol().call({}, (err, res) => {
+    console.log(`Token Symbol: ${res}`);
+  });
+
+  kds.methods.decimals().call({}, (err, res) => {
+    console.log(`Token Decimal Places: ${res}`);
+  });
+
+  kds.methods.totalSupply().call({}, (err, res) => {
+    console.log(`Total KDS supply: ${res}`);
+  });
+
+  kds.methods.balanceOf('0x6f72223547220640870a63e03C55Ecb55884a4DE').call({}, (err, res) => {
+    console.log(`Balance of ...a4DE: ${res}`);
+  });
+
+  kds.methods.balanceOf('0xC3400953F0051afE371F9310646Cd33fb9cf85Ab').call({}, (err, res) => {
+    console.log(`Balance of ...85Ab: ${res}`);
+  });
+
+</script>
+</body>
+</html>
