@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
 import "./IERC20.sol";
-import "./libs/SafeMath.sol";
+import "./SafeMath.sol";
 
 contract KDSToken is IERC20 {
     using SafeMath for uint256;
