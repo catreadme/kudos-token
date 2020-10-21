@@ -21,9 +21,8 @@ contract KDSToken is IERC20 {
 
         totalSupply = 100;
 
-        // Initially, all tokens belong to 0x6f72223547220640870a63e03C55Ecb55884a4DE
-        balances[0x6f72223547220640870a63e03C55Ecb55884a4DE] = totalSupply;
-        emit Transfer(address(0), 0x6f72223547220640870a63e03C55Ecb55884a4DE, totalSupply);
+        balances[msg.sender] = totalSupply;
+        emit Transfer(address(0), msg.sender, totalSupply);
     }
 
     function name() public view returns (string) {
@@ -38,7 +37,6 @@ contract KDSToken is IERC20 {
         return decimals;
     }
 
-    // totalSupply is 0 because everything is first allocated to 0x6f72223547220640870a63e03C55Ecb55884a4DE
     function totalSupply() public view returns (uint256) {
         return totalSupply - balances[address(0)];
     }
