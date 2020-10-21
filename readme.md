@@ -6,7 +6,7 @@
 * Compile
 * Deploy to JS VM for testing
 * Deploy to test network
-  * * **Ropsten** Test Network: https://ropsten.etherscan.io/token/0xe2e2f6881c20c873d8e53e21ba942f865e25561a
+  * * **Ropsten** Test Network: [Kudos Contract](https://ropsten.etherscan.io/token/0xe2e2f6881c20c873d8e53e21ba942f865e25561a)
 
 ## KDS Contract
 * `contract/KDSToken.sol` is the main token contract
