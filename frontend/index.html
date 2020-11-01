@@ -4,9 +4,13 @@
 <head>
     <meta charset="utf-8">
     <title>Kudos (KDS)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.6.3/css/foundation-prototype.min.css"/>
     <style>
         html {font-family: Helvetica, Verdana;}
+        body {margin: 0 auto; max-width: 800px;}
         section div span {font-weight: bold;}
+        section { margin-bottom: 50px;}
+        table {display: block; overflow: scroll;}
     </style>
 </head>
 <body>
@@ -25,7 +29,7 @@
         My Address:
         <input type="text" id="myAddress" placeholder="0x9ab5...">
     </label>
-    <button id="getBalance">Get Balance</button>
+    <button class="button" id="getBalance">Get Balance</button>
     <div>My Balance: <span id="tokenBalance"></span></div>
 </section>
 
@@ -39,13 +43,15 @@
         To Address:
         <input type="text" id="toAddress" placeholder="0x6c1a...">
     </label>
-    <button id="sendTokens">Send</button>
+    <button class="button" id="sendTokens">Send</button>
+    <div>Transaction Status: <span id="sentTransaction"></span></div>
 </section>
 
 <section>
     <h4>My Transactions</h4>
-    <button id="loadTransactions">Load Transactions</button>
-    <section style="margin-top: 10px;" id="transactions">No transactions...</section>
+    <button class="button" id="loadTransactions">Load Transactions</button>
+    <br>
+    <table><tbody id="transactions"></tbody></table>
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
@@ -214,17 +220,23 @@
     let sendAmount = Number(document.getElementById('sendAmount').value)
     let toAddress = document.getElementById('toAddress').value
     let myAddress = document.getElementById('myAddress').value
+    let sentTransaction = document.getElementById('sentTransaction')
 
-    if (toAddress === '') {alert('Enter a recipient address');return}
     if (myAddress === '') {alert('Enter your address under "My Balance"');return}
     if (typeof (sendAmount) !== 'number' || sendAmount < 1) {alert('Enter a non negative whole amount to send');return}
+    if (toAddress === '') {alert('Enter a recipient address');return}
 
     console.log(`Tying to send ${sendAmount} KDS to ${toAddress} from ${myAddress}`)
     kds.methods
       .transfer(toAddress, sendAmount)
       .send({from: myAddress}, (err, res) => {
-        console.log("transfer res:", res)
-        console.log("transfer err:", err)
+        if(err) {
+          sentTransaction.innerHTML =
+            '<span style="color: tomato;">Failed to send transaction</span>'
+        } else {
+          sentTransaction.innerHTML =
+            `<a target="_blank" href="https://ropsten.etherscan.io/tx/${res}">Sent, view on Etherscan</a>`
+        }
       })
   })
 
@@ -258,11 +270,11 @@
             }
           })
           .map(tx => {
-            let txDiv = document.createElement('div')
-            txDiv.innerHTML = `${tx.time}: ${tx.from} -> ${tx.to}: ${tx.value} ${tx.symbol}`
-            return txDiv
+            let txRow = document.createElement('tr')
+            txRow.innerHTML = `<td>${tx.time}</td> <td>${tx.from}</td> <td>${tx.to}</td> <td>${tx.value}</td> <td>${tx.symbol}</td>`
+            return txRow
           })
-          .forEach(txDiv => transactionLog.appendChild(txDiv))
+          .forEach(txRow => transactionLog.appendChild(txRow))
       })
   })
 
