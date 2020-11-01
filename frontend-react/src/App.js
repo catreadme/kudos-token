@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import Web3 from 'web3';
+
+import { kdsContractAddress, kdsInterface } from './kdsInterface';
 
 import { MyAccount } from './components/MyAccount';
 import { MyTransactions } from './components/MyTransactions';
@@ -6,6 +9,8 @@ import { NewTransaction } from './components/NewTransaction';
 import { TokenInformation } from './components/TokenInformation';
 
 export function App() {
+  let kds;
+
   const [tokenName, setTokenName] = useState("");
   const [tokenSymbol, setTokenSymbol] = useState("");
   const [tokenDecimals, setTokenDecimals] = useState("");
@@ -19,7 +24,23 @@ export function App() {
 
   const [transactions, setTransactions] = useState([]);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    initializeWeb3();
+    initializeContract();
+  }, []);
+
+  const initializeWeb3 = () => {
+    if (window.ethereum) {
+      window.web3 = new Web3(window.ethereum);
+      window.ethereum.enable();
+    } else {
+      alert("Please install MetaMaskto use the Kudos (KDS) Wallet UI");
+    }
+  }
+
+  const initializeContract = () => {
+    kds = new window.web3.eth.Contract(kdsInterface, kdsContractAddress);
+  }
   
   const fetchTokenBalance = () => {
 
