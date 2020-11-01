@@ -207,7 +207,7 @@
   let getBalance = document.getElementById('getBalance')
   getBalance.addEventListener('click', () => {
     let myAddress = document.getElementById('myAddress').value
-    if (myAddress === '') {alert('Enter your address under "My Balance" ');return}
+    if (myAddress === '') {alert('Enter your address under "My Account" ');return}
 
     kds.methods.balanceOf(myAddress).call({}, (err, res) => {
       document.getElementById('tokenBalance').innerHTML = res;
@@ -222,7 +222,7 @@
     let myAddress = document.getElementById('myAddress').value
     let sentTransaction = document.getElementById('sentTransaction')
 
-    if (myAddress === '') {alert('Enter your address under "My Balance"');return}
+    if (myAddress === '') {alert('Enter your address under "My Account"');return}
     if (typeof (sendAmount) !== 'number' || sendAmount < 1) {alert('Enter a non negative whole amount to send');return}
     if (toAddress === '') {alert('Enter a recipient address');return}
 
@@ -252,7 +252,7 @@
   loadTransactions.addEventListener('click', () => {
     let myAddress = document.getElementById('myAddress').value
     let transactionLog = document.getElementById('transactions');
-    if (myAddress === '') {alert('Enter your address under "My Balance" ');return}
+    if (myAddress === '') {alert('Enter your address under "My Account" ');return}
 
     console.log(`Trying to load transactions from ${myAddress}`)
     transactionLog.innerHTML = ''
