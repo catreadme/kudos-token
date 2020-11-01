@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import './foundation-prototype.min.css';
 import './index.css';
 import { App } from './App';
 

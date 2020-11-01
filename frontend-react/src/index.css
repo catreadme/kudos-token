@@ -1,0 +1,21 @@
+html {
+  font-family: Helvetica, Verdana;
+}
+
+body {
+  margin: 0 auto; 
+  max-width: 800px;
+}
+
+section div span {
+  font-weight: bold;
+}
+
+section { 
+  margin-bottom: 50px;
+}
+
+table {
+  display: block; 
+  overflow-x: auto;
+}

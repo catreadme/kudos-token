@@ -1,6 +1,6 @@
 import React from 'react';
 
-export function NewTransaction({ amount, setAmount, address, setAddress, sendTokens }) {
+export function NewTransaction({ amount, setAmount, address, setAddress, transactionStatus, sendTokens }) {
   return (
     <section>
       <h4>New Transaction</h4>
@@ -13,6 +13,10 @@ export function NewTransaction({ amount, setAmount, address, setAddress, sendTok
         <input type="text" placeholder="0x6c1a..." value={address} onChange={event => setAddress(event.target.value)} />
       </label>
       <button class="button" onClick={sendTokens}>Send</button>
+      <div>
+        <span>Transaction Status:</span>
+        <span>{transactionStatus}</span>
+      </div>
     </section>
   );
 }
