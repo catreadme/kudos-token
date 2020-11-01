@@ -24,7 +24,7 @@
 </section>
 
 <section>
-    <h4>My Balance</h4>
+    <h4>My Account</h4>
     <label>
         My Address:
         <input type="text" id="myAddress" placeholder="0x9ab5...">
@@ -203,7 +203,7 @@
     document.getElementById('tokenSupply').innerHTML = res;
   });
 
-  // Handle "My Balance"
+  // Handle "My Account"
   let getBalance = document.getElementById('getBalance')
   getBalance.addEventListener('click', () => {
     let myAddress = document.getElementById('myAddress').value
