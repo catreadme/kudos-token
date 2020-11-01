@@ -10,10 +10,10 @@
   - [Contract Methods](#contract-methods)
 
 ## Quickstart
-* Install the MetaMask browser extension
-  * [Mozilla Firefox](https://addons.mozilla.org/en-US/firefox/addon/ether-metamask/)
-  * [Google Chrome](https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn)
-* Create or import a wallet
+* Install the MetaMask browser extension ([Firefox](https://addons.mozilla.org/en-US/firefox/addon/ether-metamask/), [Chrome](https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn))
+* Create an account and log in
+* Select the **Ropsten** test network
+* Add the Kudos (KDS) Token (*Add Tokern* -> *Custom Token* -> `0xe2e2f6881c20c873d8e53e21ba942f865e25561a`)
 
 ```shell
 git clone https://github.com/catreadme/kudos-token.git
