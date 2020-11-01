@@ -1,0 +1,28 @@
+version: '3.3'
+
+services:
+  kudos:
+    build:
+      context: ./
+      dockerfile: frontend/Dockerfile
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.urlshortener.rule=Host(`localhost`)"
+      - "traefik.http.routers.urlshortener.entrypoints=kudos"
+
+  kudos-reverse-proxy:
+    image: traefik:2.1
+    command:
+      - "--api.insecure=true"
+      #- "--log.level=DEBUG"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.kudos.address=:4000"
+    container_name: kudos-reverse-proxy
+    restart: always
+    ports:
+      - 4000:4000
+      - 8081:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
