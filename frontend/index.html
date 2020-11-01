@@ -2,75 +2,67 @@
 
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Kudos (KDS)</title>
-  <style>
-    html {
-      font-family: Helvetica, Verdana;
-    }
-    section div span {
-      font-weight: bold;
-    }
-  </style>
+    <meta charset="utf-8">
+    <title>Kudos (KDS)</title>
+    <style>
+        html {font-family: Helvetica, Verdana;}
+        section div span {font-weight: bold;}
+    </style>
 </head>
 <body>
 <h1>Kudos (KDS) transaction UI</h1>
 
 <section>
-  <div>Token Name: <span id="tokenName"></span></div>
+    <div>Token Name: <span id="tokenName"></span></div>
+    <div>Token Symbol: <span id="tokenSymbol"></span></div>
+    <div>Token Decimals: <span id="tokenDecimals"></span></div>
+    <div>Token Supply: <span id="tokenSupply"></span></div>
 </section>
 
 <section>
-  <div>Token Symbol: <span id="tokenSymbol"></span></div>
+    <h4>My Balance</h4>
+    <label>
+        My Address:
+        <input type="text" id="myAddress" placeholder="0x9ab5...">
+    </label>
+    <button id="getBalance">Get Balance</button>
+    <div>My Balance: <span id="tokenBalance"></span></div>
 </section>
 
 <section>
-  <div>Token Decimals: <span id="tokenDecimals"></span></div>
+    <h4>Transact</h4>
+    <label>
+        Send Amount:
+        <input type="number" step="1" min="1" id="sendAmount" placeholder="5">
+    </label>
+    <label>
+        To Address:
+        <input type="text" id="toAddress" placeholder="0x6c1a...">
+    </label>
+    <button id="sendTokens">Send</button>
 </section>
 
 <section>
-  <div>Token Supply: <span id="tokenSupply"></span></div>
+    <h4>My Transactions</h4>
+    <button id="loadTransactions">Load Transactions</button>
+    <section style="margin-top: 10px;" id="transactions">No transactions...</section>
 </section>
 
-<section>
-  <h4>My Balance</h4>
-  <label>
-    My Address:
-    <input type="text" id="myAddress" placeholder="0x9ab5...">
-  </label>
-  <button id="getBalance">Get Balance</button>
-  <div>My Balance: <span id="tokenBalance"></span></div>
-</section>
-
-<section>
-  <h4>Transact</h4>
-  <label>
-    Send Amount:
-    <input type="number" step="1" min="1" id="sendAmount" placeholder="5">
-  </label>
-  <label>
-    To Address:
-    <input type="text" id="toAddress" placeholder="0x6c1a...">
-  </label>
-  <button id="sendTokens">Send</button>
-</section>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.3.0/web3.min.js"></script>
 <script>
-  const ethEnabled = () => {
+
+  // Initialize web3.js
+  (() => {
     if (window.ethereum) {
       window.web3 = new Web3(window.ethereum);
       window.ethereum.enable();
-      return true;
+      return;
     }
-    return false;
-  }
-
-  if (!ethEnabled()) {
     alert("Please install MetaMask to use the Kudos (KDS) transaction ui");
-  }
+  })();
 
-  // Handle Local Storage for input fields
+  // Handle Local Storage for address input fields
   let localStorage = window.localStorage
 
   let myAddress = document.getElementById('myAddress')
@@ -87,40 +79,131 @@
 
 
   // Initialize the KDS contract
-  let kdsInterface = [{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"spender","type":"address"},{"name":"tokens","type":"uint256"}],"name":"approve","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"from","type":"address"},{"name":"to","type":"address"},{"name":"tokens","type":"uint256"}],"name":"transferFrom","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"},{"name":"tokens","type":"uint256"}],"name":"transfer","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"owner","type":"address"},{"name":"spender","type":"address"}],"name":"allowance","outputs":[{"name":"remaining","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"owner","type":"address"},{"indexed":true,"name":"spender","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Approval","type":"event"}];
+  let kdsInterface = [{
+    "constant": true,
+    "inputs": [],
+    "name": "name",
+    "outputs": [{"name": "", "type": "string"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  }, {
+    "constant": false,
+    "inputs": [{"name": "spender", "type": "address"}, {"name": "tokens", "type": "uint256"}],
+    "name": "approve",
+    "outputs": [{"name": "success", "type": "bool"}],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }, {
+    "constant": true,
+    "inputs": [],
+    "name": "totalSupply",
+    "outputs": [{"name": "", "type": "uint256"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  }, {
+    "constant": false,
+    "inputs": [{"name": "from", "type": "address"}, {"name": "to", "type": "address"}, {
+      "name": "tokens",
+      "type": "uint256"
+    }],
+    "name": "transferFrom",
+    "outputs": [{"name": "success", "type": "bool"}],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }, {
+    "constant": true,
+    "inputs": [],
+    "name": "decimals",
+    "outputs": [{"name": "", "type": "uint8"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  }, {
+    "constant": true,
+    "inputs": [{"name": "owner", "type": "address"}],
+    "name": "balanceOf",
+    "outputs": [{"name": "balance", "type": "uint256"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  }, {
+    "constant": true,
+    "inputs": [],
+    "name": "symbol",
+    "outputs": [{"name": "", "type": "string"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  }, {
+    "constant": false,
+    "inputs": [{"name": "to", "type": "address"}, {"name": "tokens", "type": "uint256"}],
+    "name": "transfer",
+    "outputs": [{"name": "success", "type": "bool"}],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }, {
+    "constant": true,
+    "inputs": [{"name": "owner", "type": "address"}, {"name": "spender", "type": "address"}],
+    "name": "allowance",
+    "outputs": [{"name": "remaining", "type": "uint256"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  }, {"inputs": [], "payable": false, "stateMutability": "nonpayable", "type": "constructor"}, {
+    "anonymous": false,
+    "inputs": [{"indexed": true, "name": "from", "type": "address"}, {
+      "indexed": true,
+      "name": "to",
+      "type": "address"
+    }, {"indexed": false, "name": "value", "type": "uint256"}],
+    "name": "Transfer",
+    "type": "event"
+  }, {
+    "anonymous": false,
+    "inputs": [{"indexed": true, "name": "owner", "type": "address"}, {
+      "indexed": true,
+      "name": "spender",
+      "type": "address"
+    }, {"indexed": false, "name": "value", "type": "uint256"}],
+    "name": "Approval",
+    "type": "event"
+  }];
+
+  // Kudos (KDS) contract address on ropsten test network
   let kdsContractAddress = '0xe2e2f6881c20c873d8e53e21ba942f865e25561a';
   let kds = new window.web3.eth.Contract(
-          kdsInterface,
-          kdsContractAddress);
+    kdsInterface,
+    kdsContractAddress);
 
   // Get some info about the KDS contract and display it on the page
   kds.methods.name().call({}, (err, res) => {
-    console.log(`Token Name: ${res}`);
     document.getElementById('tokenName').innerHTML = res;
   });
 
   kds.methods.symbol().call({}, (err, res) => {
-    console.log(`Token Symbol: ${res}`);
     document.getElementById('tokenSymbol').innerHTML = res;
   });
 
   kds.methods.decimals().call({}, (err, res) => {
-    console.log(`Token Decimal Places: ${res}`);
     document.getElementById('tokenDecimals').innerHTML = res;
   });
 
   kds.methods.totalSupply().call({}, (err, res) => {
-    console.log(`Total KDS supply: ${res}`);
     document.getElementById('tokenSupply').innerHTML = res;
   });
 
   // Handle "My Balance"
   let getBalance = document.getElementById('getBalance')
   getBalance.addEventListener('click', () => {
-    let address = document.getElementById('myAddress').value
-    if(address === '') {alert('Enter your address under "My Balance" '); return}
-    kds.methods.balanceOf(address).call({}, (err, res) => {
-      console.log(`Balance of ${address}: ${res}`);
+    let myAddress = document.getElementById('myAddress').value
+    if (myAddress === '') {alert('Enter your address under "My Balance" ');return}
+
+    kds.methods.balanceOf(myAddress).call({}, (err, res) => {
       document.getElementById('tokenBalance').innerHTML = res;
     });
   })
@@ -132,17 +215,55 @@
     let toAddress = document.getElementById('toAddress').value
     let myAddress = document.getElementById('myAddress').value
 
-    if(toAddress === '') {alert('Enter a recipient address'); return}
-    if(myAddress === '') {alert('Enter your address under "My Balance"'); return}
-    if(typeof(sendAmount) !== 'number' || sendAmount < 1) {alert('Enter a non negative whole amount to send');  return}
+    if (toAddress === '') {alert('Enter a recipient address');return}
+    if (myAddress === '') {alert('Enter your address under "My Balance"');return}
+    if (typeof (sendAmount) !== 'number' || sendAmount < 1) {alert('Enter a non negative whole amount to send');return}
 
     console.log(`Tying to send ${sendAmount} KDS to ${toAddress} from ${myAddress}`)
     kds.methods
-            .transfer(toAddress, sendAmount)
-            .send({ from: myAddress }, (err, res) => {
-              console.log("transfer res:", res)
-              console.log("transfer err:", err)
-            })
+      .transfer(toAddress, sendAmount)
+      .send({from: myAddress}, (err, res) => {
+        console.log("transfer res:", res)
+        console.log("transfer err:", err)
+      })
+  })
+
+  // Handle "My Transactions"
+  const fetchTransactions = (address) => {
+    const baseUrl = 'https://api-ropsten.etherscan.io/api'
+    const apiToken = 'UK9YQR8ZHSZNDDNB67BTA7FJK4WFIXVDPY'
+    const endpoint = `${baseUrl}?module=account&action=tokentx&address=${address}&startblock=0&endblock=999999999&sort=asc&apikey=${apiToken}`;
+    return fetch(endpoint).then(res => res.json())
+  }
+
+  let loadTransactions = document.getElementById('loadTransactions')
+  loadTransactions.addEventListener('click', () => {
+    let myAddress = document.getElementById('myAddress').value
+    let transactionLog = document.getElementById('transactions');
+    if (myAddress === '') {alert('Enter your address under "My Balance" ');return}
+
+    console.log(`Trying to load transactions from ${myAddress}`)
+    transactionLog.innerHTML = ''
+    fetchTransactions(myAddress)
+      .then(data => {
+        data.result
+          .filter(tx => tx.tokenSymbol === 'KDS')
+          .map(tx => {
+            return {
+              time: moment.unix(tx.timeStamp).format('DD/MM/YYYY'),
+              from: tx.from,
+              to: tx.to,
+              value: tx.value,
+              symbol: tx.tokenSymbol
+            }
+          })
+          .map(tx => {
+            let txDiv = document.createElement('div')
+            txDiv.innerHTML = `${tx.time}: ${tx.from} -> ${tx.to}: ${tx.value} ${tx.symbol}`
+            return txDiv
+          })
+          .forEach(txDiv => transactionLog.appendChild(txDiv))
+      })
   })
 
 </script>
