@@ -1,5 +1,5 @@
 # Kudos ERC20 Token
-> Kudos is a simple ERC20 token developed for the ADSB lecture at OST university of applied sciences.
+> Kudos is a simple ERC20 token developed for the ADSB course at OST university of applied sciences.
 
 - [Quickstart](#quickstart)
 - [Requirements](#requirements)
