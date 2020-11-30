@@ -1,4 +1,11 @@
-export function TokenInformation({ tokenName, tokenSymbol, tokenDecimals, tokenSupply }) {
+import React from 'react';
+
+export function TokenInformation({ 
+  tokenName, 
+  tokenSymbol, 
+  tokenDecimals, 
+  tokenSupply 
+}) {
   return (
     <section>
       <h1>Kudos (KDS) Wallet UI</h1>

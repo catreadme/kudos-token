@@ -2,7 +2,9 @@ export function MyTransactions({ transactions, loadTransactions }) {
   return (
     <section>
       <h4>My Transactions:</h4>
-      <button class="button" onClick={loadTransactions}>Load Transactions</button>
+      <button className="button" onClick={loadTransactions}>
+        Load Transactions
+      </button>
       <br />
       {
         transactions.length > 0 ?
