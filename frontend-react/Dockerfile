@@ -1,9 +1,10 @@
 FROM node:lts-alpine as build
 
-WORKDIR /app
+WORKDIR /app/
+COPY frontend-react/ ./
 RUN npm install
 RUN npm run build
 
 FROM nginx:alpine as final
 
-COPY --from=build /app/build /usr/share/nginx/html
+COPY --from=build /app/build/ /usr/share/nginx/html/
