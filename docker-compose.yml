@@ -4,7 +4,7 @@ services:
   kudos:
     build:
       context: ./
-      dockerfile: frontend/Dockerfile
+      dockerfile: frontend-react/Dockerfile
     restart: always
     labels:
       - "traefik.enable=true"
