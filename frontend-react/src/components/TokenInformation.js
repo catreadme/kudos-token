@@ -8,7 +8,7 @@ export function TokenInformation({
 }) {
   return (
     <section>
-      <h1>Kudos (KDS) Wallet UI</h1>
+      <h4>Token Information</h4>
       <table>
         <tbody>
           <tr>

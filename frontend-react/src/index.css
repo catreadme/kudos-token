@@ -12,10 +12,11 @@ section div span {
 }
 
 section { 
-  margin-bottom: 50px;
+  margin-top: 25px;
+  margin-bottom: 25px;
 }
 
-table {
+.table-overflow {
   display: block; 
   overflow-x: auto;
 }

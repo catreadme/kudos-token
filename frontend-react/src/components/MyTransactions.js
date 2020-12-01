@@ -8,7 +8,7 @@ export function MyTransactions({ transactions, loadTransactions }) {
       <br />
       {
         transactions.length > 0 ?
-          <table>
+          <table className="table-overflow">
             <thead>
               <tr>
                 <th>Time</th>

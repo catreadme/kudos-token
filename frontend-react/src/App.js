@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
 import Web3 from 'web3';
 import moment from 'moment';
 
 import { kdsContractAddress, kdsInterface } from './kdsInterface';
 
-import { MyAccount } from './components/MyAccount';
-import { MyTransactions } from './components/MyTransactions';
-import { NewTransaction } from './components/NewTransaction';
 import { TokenInformation } from './components/TokenInformation';
+import { Balance } from './components/Balance';
 import { Allowance } from './components/Allowance';
-import { Approval } from './components/Approval';
-import { TransferFrom } from './components/TransferFrom';
+import { NewTransaction } from './components/NewTransaction';
+import { MyTransactions } from './components/MyTransactions';
 
 export function App() {
   const [tokenName, setTokenName] = useState("");
@@ -18,27 +17,17 @@ export function App() {
   const [tokenDecimals, setTokenDecimals] = useState("");
   const [tokenSupply, setTokenSupply] = useState("");
 
-  const [myAddress, setMyAddress] = useState("");
-  const [tokenBalance, setTokenBalance] = useState(0);
-
-  const [transferAddress, setTransferAddress] = useState("");
-  const [transferAmount, setTransferAmount] = useState(0);
-  const [transactionStatus, setTransactionStatus] = useState("");
-  
-  const [transactions, setTransactions] = useState([]);
-
-  const [allowanceOwnerAddress, setAllowanceOwnerAddress] = useState("");
-  const [allowanceSpenderAddress, setAllowanceSpenderAddress] = useState("");
+  const [balance, setBalance] = useState(0);
+  const [ownerAddress, setOwnerAddress] = useState("");
+  const [spenderAddress, setSpenderAddress] = useState("");
   const [allowance, setAllowance] = useState(0);
 
-  const [approveAddress, setApproveAddress] = useState("");
-  const [approveAmount, setApproveAmount] = useState(0);
-  const [approvalStatus, setApprovalStatus] = useState("");
+  const [amount, setAmount] = useState(0);
+  const [fromAddress, setFromAddress] = useState(window.ethereum.selectedAddress || "");
+  const [toAddress, setToAddress] = useState("");
+  const [transactionStatus, setTransactionStatus] = useState("");
 
-  const [transferFromOwnerAddress, setTransferFromOwnerAddress] = useState("");
-  const [transferFromSpenderAddress, setTransferFromSpenderAddress] = useState("");
-  const [transferFromAmount, setTransferFromAmount] = useState(0);
-  const [transferFromStatus, setTransferFromStatus] = useState("");
+  const [transactions, setTransactions] = useState([]);
 
   useEffect(() => {
     initializeWeb3();
@@ -77,38 +66,24 @@ export function App() {
     });
   };
   
-  const loadTokenBalance = () => {
-    if (myAddress === '') {
-      alert('Enter your address under "My Account"');
-      return;
-    }
-
-    window.kds.methods.balanceOf(myAddress).call({}, (_, res) => {
-      setTokenBalance(res);
+  const loadBalance = () => {
+    window.kds.methods.balanceOf(window.ethereum.selectedAddress).call({}, (_, res) => {
+      setBalance(res);
     });
   };
 
-  const transfer = () => {
-    const amountToSend = Number(transferAmount);
-
-    if (myAddress === '') {
-      alert('Enter your address under "My Account"');
-      return;
-    }
-
-    if (transferAddress === '') {
-      alert('Enter a recipient address');
-      return;
-    }
-
-    if (typeof amountToSend !== 'number' || amountToSend < 1) {
-      alert('Enter a non negative whole amount to send');
-      return;
-    }
-
+  const loadAllowance = () => {
     window.kds.methods
-      .transfer(transferAddress, transferAmount)
-      .send({ from: myAddress }, (err, res) => {
+      .allowance(ownerAddress, spenderAddress)
+      .call({}, (_, res) => {
+        setAllowance(res);
+      });
+  }
+
+  const transfer = () => {
+    window.kds.methods
+      .transfer(toAddress, amount)
+      .send({ from: window.ethereum.selectedAddress }, (err, res) => {
         if (err) {
           setTransactionStatus(
             <span style={{ color: "tomato" }}>Failed to send transaction</span>
@@ -123,19 +98,50 @@ export function App() {
       })
   };
 
+  const transferFrom = () => {
+    window.kds.methods
+      .transferFrom(fromAddress, toAddress, amount)
+      .send({ from: window.ethereum.selectedAddress }, (err, res) => {
+        if (err) {
+          setTransactionStatus(
+            <span style={{ color: "tomato" }}>Failed to send transaction</span>
+          );
+        } else {
+          setTransactionStatus(
+            <a target="_blank" rel="noreferrer" href={"https://ropsten.etherscan.io/tx/" + res}>
+              Sent, view on Etherscan
+            </a>
+          )
+        }
+      });
+  }
+
+  const approve = () => {   
+    window.kds.methods
+      .approve(toAddress, amount)
+      .send({ from: window.ethereum.selectedAddress }, (err, res) => {
+        if (err) {
+          setTransactionStatus(
+            <span style={{ color: "tomato" }}>Failed to send transaction</span>
+          );
+        } else {
+          setTransactionStatus(
+            <a target="_blank" rel="noreferrer" href={"https://ropsten.etherscan.io/tx/" + res}>
+              Sent, view on Etherscan
+            </a>
+          )
+        }
+      });
+  }
+
   const fetchTransactions = () => {
     const baseUrl = 'https://api-ropsten.etherscan.io/api';
     const apiToken = 'UK9YQR8ZHSZNDDNB67BTA7FJK4WFIXVDPY';
-    const endpoint = `${baseUrl}?module=account&action=tokentx&address=${myAddress}&startblock=0&endblock=999999999&sort=asc&apikey=${apiToken}`;
+    const endpoint = `${baseUrl}?module=account&action=tokentx&address=${window.ethereum.selectedAddress}&startblock=0&endblock=999999999&sort=asc&apikey=${apiToken}`;
     return fetch(endpoint).then(res => res.json());
   };
 
   const loadTransactions = () => {
-    if (myAddress === '') {
-      alert('Enter your address under "My Account"');
-      return;
-    }
-
     fetchTransactions().then(data => {
       const transactions = data.result
         .filter(transaction => transaction.tokenSymbol === tokenSymbol)
@@ -154,144 +160,62 @@ export function App() {
     });
   };
 
-  const loadAllowance = () => {
-    if (allowanceOwnerAddress === '') {
-      alert('Enter an owner address to display allowance from');
-      return;
-    }
-
-    if (allowanceSpenderAddress === '') {
-      alert('Enter a spender address to display allowance from');
-      return;
-    }
-
-    window.kds.methods
-      .allowance(allowanceOwnerAddress, allowanceSpenderAddress)
-      .call({}, (_, res) => {
-        setAllowance(res);
-      });
-  }
-
-  const approveTokens = () => {
-    const amountToApprove = Number(approveAmount);
-
-    if (myAddress === '') {
-      alert('Enter your address under "My Account"');
-      return;
-    }
-
-    if (approveAddress === '') {
-      alert("Enter an address to approve tokens to");
-      return;
-    }
-
-    if (typeof amountToApprove !== 'number' || amountToApprove < 1) {
-      alert("Enter a non negative whole amount to approve to spender");
-      return;
-    }
-    
-    window.kds.methods
-      .approve(approveAddress, approveAmount)
-      .send({ from: myAddress }, (err, res) => {
-        if (err) {
-          setApprovalStatus(
-            <span style={{ color: "tomato" }}>Failed to send transaction</span>
-          );
-        } else {
-          setApprovalStatus(
-            <a target="_blank" rel="noreferrer" href={"https://ropsten.etherscan.io/tx/" + res}>
-              Sent, view on Etherscan
-            </a>
-          )
-        }
-      });
-  }
-
-  const transferFrom = () => {
-    const amountToTransferFrom = Number(transferFromAmount);
-
-    if (transferFromOwnerAddress === '') {
-      alert("");
-      return;
-    }
-
-    if (transferFromSpenderAddress === '') {
-      alert("");
-      return;
-    }
-
-    if (transferFromAmount === '') {
-      alert("");
-      return;
-    }
-
-    window.kds.methods
-      .transferFrom(transferFromOwnerAddress, transferFromSpenderAddress, amountToTransferFrom)
-      .send({ from: myAddress }, (err, res) => {
-        if (err) {
-          setTransferFromStatus(
-            <span style={{ color: "tomato" }}>Failed to send transaction</span>
-          );
-        } else {
-          setTransferFromStatus(
-            <a target="_blank" rel="noreferrer" href={"https://ropsten.etherscan.io/tx/" + res}>
-              Sent, view on Etherscan
-            </a>
-          )
-        }
-      });
-  }
-
   return (
     <div>
-      <ul class="tabs" data-tabs id="example-tabs">
-        <li class="tabs-title is-active"><a href="#panel1" aria-selected="true">Tab 1</a></li>
-        <li class="tabs-title"><a data-tabs-target="panel2" href="#panel2">Tab 2</a></li>
+      <h1>Kudos (KDS) Wallet UI</h1>
+      <ul className="menu">
+        <li><a href="/info">Token Info</a></li>
+        <li><a href="/account">Account</a></li>
+        <li><a href="/new-transaction">New Transaction</a></li>
+        <li><a href="/transactions">Transactions</a></li>
       </ul>
       
-      <TokenInformation 
-        tokenName={tokenName} 
-        tokenSymbol={tokenSymbol} 
-        tokenDecimals={tokenDecimals} 
-        tokenSupply={tokenSupply} />
-      <MyAccount 
-        address={myAddress} 
-        setAddress={setMyAddress} 
-        tokenBalance={tokenBalance} 
-        loadTokenBalance={loadTokenBalance} />
-      <NewTransaction 
-        amount={transferAmount} 
-        setAmount={setTransferAmount} 
-        address={transferAddress} 
-        setAddress={setTransferAddress} 
-        transactionStatus={transactionStatus} 
-        transfer={transfer} />
-      <MyTransactions 
-        transactions={transactions} 
-        loadTransactions={loadTransactions} />
-      <Allowance 
-        ownerAddress={allowanceOwnerAddress} 
-        setOwnerAddress={setAllowanceOwnerAddress} 
-        spenderAddress={allowanceSpenderAddress} 
-        setSpenderAddress={setAllowanceSpenderAddress} 
-        allowance={allowance} 
-        loadAllowance={loadAllowance} />
-      <Approval 
-        amount={approveAmount}
-        setAmount={setApproveAmount}
-        address={approveAddress}
-        setAddress={setApproveAddress}
-        transactionStatus={approvalStatus}
-        approveTokens={approveTokens} />
-      <TransferFrom 
-        amount={transferFromAmount}
-        setAmount={setTransferFromAmount}
-        ownerAddress={transferFromOwnerAddress}
-        setOwnerAddress={setTransferFromOwnerAddress}
-        spenderAddress={transferFromSpenderAddress}
-        setSpenderAddress={setTransferFromSpenderAddress}
-        transactionStatus={transferFromStatus}
-        transferFrom={transferFrom} />
+      <Router>
+        <Switch>
+          <Route path="/info">
+            <TokenInformation 
+              tokenName={tokenName} 
+              tokenSymbol={tokenSymbol} 
+              tokenDecimals={tokenDecimals} 
+              tokenSupply={tokenSupply} />
+          </Route>
+          <Route path="/account">
+            <Balance 
+              address={window.ethereum.selectedAddress} 
+              balance={balance} 
+              loadBalance={loadBalance} />
+            <Allowance 
+              ownerAddress={ownerAddress} 
+              setOwnerAddress={setOwnerAddress} 
+              spenderAddress={spenderAddress} 
+              setSpenderAddress={setSpenderAddress} 
+              allowance={allowance} 
+              loadAllowance={loadAllowance} />
+          </Route>
+          <Route path="/new-transaction">
+            <NewTransaction 
+              amount={amount} 
+              setAmount={setAmount} 
+              myAddress={window.ethereum.selectedAddress}
+              fromAddress={fromAddress}
+              setFromAddress={setFromAddress}
+              toAddress={toAddress} 
+              setToAddress={setToAddress} 
+              transactionStatus={transactionStatus} 
+              transfer={transfer}
+              transferFrom={transferFrom}
+              approve={approve} />
+          </Route>
+          <Route path="/transactions">
+            <MyTransactions 
+              transactions={transactions} 
+              loadTransactions={loadTransactions} />
+          </Route>
+          <Route path="/">
+            <Redirect to="/account" />
+          </Route>
+        </Switch>
+      </Router>
     </div>
   );
 }
