@@ -63,7 +63,7 @@ export function NewTransaction({
         <input type="number" step="1" min="1" placeholder="5" value={amount} 
           onChange={event => setAmount(Number(event.target.value))} />
       </label>
-      {selectedAction === "transfer" &&
+      {selectedAction === "transferFrom" &&
         <label>
           <span>From Address:</span>
           <input type="text" placeholder="0x6c1a..." value={fromAddress}
