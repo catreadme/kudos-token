@@ -59,7 +59,7 @@ export function NewTransaction({
         </select>
       </label>
       <label>
-        <span>{selectedAction === "transfer" ? "Send" : "Approve"} Amount:</span>
+        <span>{selectedAction === "approve" ? "Approve" : "Send"} Amount:</span>
         <input type="number" step="1" min="1" placeholder="5" value={amount} 
           onChange={event => setAmount(Number(event.target.value))} />
       </label>

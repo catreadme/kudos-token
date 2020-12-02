@@ -23,7 +23,7 @@ export function App() {
   const [allowance, setAllowance] = useState(0);
 
   const [amount, setAmount] = useState(0);
-  const [fromAddress, setFromAddress] = useState(window.ethereum.selectedAddress || "");
+  const [fromAddress, setFromAddress] = useState("");
   const [toAddress, setToAddress] = useState("");
   const [transactionStatus, setTransactionStatus] = useState("");
 
