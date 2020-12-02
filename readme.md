@@ -1,13 +1,14 @@
 # Kudos ERC20 Token
 > Kudos is a simple ERC20 token developed for the ADSB course at OST university of applied sciences.
 
-- [Quickstart](#quickstart)
-- [Requirements](#requirements)
-- [Frontend](#frontend)
-  - [Tools](#tools)
-- [Kudos (KDS) Contract](#kudos-kds-contract)
-  - [Development](#development)
-  - [Contract Methods](#contract-methods)
+- [Kudos ERC20 Token](#kudos-erc20-token)
+  - [Quickstart](#quickstart)
+  - [Requirements](#requirements)
+  - [Frontend](#frontend)
+    - [Tools](#tools)
+  - [Kudos (KDS) Contract](#kudos-kds-contract)
+    - [Development](#development)
+    - [Contract Methods](#contract-methods)
 
 ## Quickstart
 * Install the MetaMask browser extension ([Firefox](https://addons.mozilla.org/en-US/firefox/addon/ether-metamask/), [Chrome](https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn))
@@ -21,7 +22,7 @@ cd kudos-token
 docker-compose up --build -d --scale kudos=3
 ```
 
-* Visit [localhost:4000](http://localhost:4000/)
+* Visit [localhost:3000](http://localhost:3000/)
 * Connect your wallet to the application (the MetaMask extension popup should appear)
 
 ## Requirements
