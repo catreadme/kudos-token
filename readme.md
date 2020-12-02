@@ -33,7 +33,10 @@ docker-compose up --build -d --scale kudos=3
 The frontend acts as the "**wallet**" and has the following features:
 * **View Account Balance** (Can be used to retrieve *own* balance or someone else's)
 * **Do a transaction** (Can send KDS Tokens to somebody)
-* **View transaction history** (From own account or somebody else's)
+* **View transaction history** (From own account)
+* **Approve an amount to spend to a different wallet** (Allow a different wallet to spend tokens for you)
+* **Check allowance from another wallet** (Check how many tokens you are allowed to spend from a different wallet)
+* **Do a transaction from another wallet** (Send tokens to a wallet, taking the amount from a different one than yours)
 
 ### Tools
 * [web3.js](https://web3js.readthedocs.io/en/v1.2.0/web3-eth-contract.html) for handling the contract interaction
